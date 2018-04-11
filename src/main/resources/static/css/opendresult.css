@@ -1,0 +1,63 @@
+
+body
+{
+    background-color: #e7ebee;
+    padding-top: 65px; 
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#datamap 
+{
+    width: 95%;
+    height: 500px;
+}  
+
+.brand-icon{
+    padding-top:0px; 
+    padding-left:0px; 
+    height:20px; 
+    width:auto;
+}
+
+.panel-heading-1
+{
+    background-color: #01579b !important;
+    border-color: #01579b !important;
+}
+
+.panel-heading-2
+{
+    background-color: #039be5 !important;
+    border-color: #039be5 !important;
+}
+
+
+.panel-heading-3
+{
+    background-color: #29b6f6 !important;
+    border-color: #29b6f6 !important;
+}
+
+.panel-title>a, .panel-title>a:active{
+  display:block;
+  padding:10px;
+  color:#ffffff;
+  font-size:16px;
+  font-weight:bold;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  word-spacing:3px;
+  text-decoration:none;
+}
+.panel-heading  a:before {
+   font-family: 'Glyphicons Halflings';
+   content: "\e114";
+   float: right;
+   transition: all 0.5s;
+}
+.panel-heading.active a:before {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    transform: rotate(180deg);
+} 

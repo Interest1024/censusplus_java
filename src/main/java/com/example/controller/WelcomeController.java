@@ -16,7 +16,13 @@ public class WelcomeController {
     @RequestMapping("/")
     public String welcome(Map<String, Object> model) {
         model.put("message", this.message);
-        return "welcome";
+        return "mainform";
+    }
+
+    @RequestMapping("/about")
+    public String about(Map<String, Object> model) {
+        model.put("message", this.message);
+        return "about";
     }
 
 }

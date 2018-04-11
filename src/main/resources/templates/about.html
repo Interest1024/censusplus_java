@@ -4,12 +4,12 @@
     <title>Spring Boot Thymeleaf Hello World Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" />
+    <!--link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" /-->
 
     <link rel="stylesheet" type="text/css"
           href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
 
-    <link rel="stylesheet" th:href="@{/css/opendsearch.css}" />
+    <link rel="stylesheet" th:href="@{/css/opendresult.css}" />
 
 </head>
 <body>
@@ -18,7 +18,7 @@
         <div id="container">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand" style="width: auto;">
-                    <img src="censusplus.png" class="brand-icon" />
+                    <img src="/static/censusplus.png" th:src="@{/censusplus.png}" class="brand-icon" />
                 </a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-links" aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
@@ -37,30 +37,6 @@
             </div>
         </div>
     </nav>
-
-
-
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 mainsearchrow1">
-                <h2 style="text-align:center">Know Your Community</h2>
-
-                <div class="row">
-                    <div class="col-lg-12 mainsearchrow2">
-                        <form action = "" method="POST" name="mainform">
-                            <label>Search for your address</label>
-                            <div class="input-group">
-                                <input name="InputAddress" type="text" id="autocomplete" class="form-control input-lg" size="100"/>
-                                <span class="input-group-addon">
-                                    <button class="btn mainsearchbtn" type="submit">Go</button>
-                                </span>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div><!-- /.container -->
 </header>
 
 <footer id="footer">
@@ -72,8 +48,7 @@
 
 <script type="text/javascript"
         src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
-
+<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
 
 </body>
 </html>
