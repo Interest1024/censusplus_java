@@ -4,11 +4,8 @@
     <title>Spring Boot Thymeleaf Hello World Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-    <!--link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" /-->
-
-    <link rel="stylesheet" type="text/css"
-          href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
-
+    <link href="/webjars/jquery-ui/1.12.1/jquery-ui.css" type="text/css" rel="Stylesheet" />
+    <link rel="stylesheet" type="text/css" href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" th:href="@{/css/opendsearch.css}" />
 
 </head>
@@ -48,7 +45,7 @@
                 <div class="row">
                     <div class="col-lg-12 mainsearchrow2">
                         <form action = "" method="POST" name="mainform">
-                            <label>Search for your address</label>
+                            <label for="autocomplete">Search for your address</label>
                             <div class="input-group">
                                 <input name="InputAddress" type="text" id="autocomplete" class="form-control input-lg" size="100"/>
                                 <span class="input-group-addon">
@@ -60,6 +57,8 @@
                 </div>
             </div>
         </div>
+
+
     </div><!-- /.container -->
 </header>
 
@@ -70,9 +69,27 @@
     </p>
 </footer>
 
-<script type="text/javascript"
-        src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+<script src="/webjars/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+<script src="/webjars/jquery-ui/1.12.1/jquery-ui.js" type="text/javascript"></script>
+<script src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    $(function() {
+        $("#autocomplete").autocomplete({
+            minLength: 3,
+            source:function(request, response) {
+                $.getJSON("/autocomplete",{
+                    q: request.term // in flask, "q" will be the argument to look for using request.args
+                }, function(data) {
+                    //console.log(data.matching_results.slice(0,5));
+                    response(data.matching_results.slice(0,5)); // matching_results from jsonify
+                });
+            },
+            select: function(event, ui) {
+                console.log(ui.item.value); // not in your question, but might help later
+            }
+        });
+    })
+</script>
 
 
 </body>
