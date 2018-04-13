@@ -6,17 +6,16 @@ package com.example.model;
 
 import java.io.Serializable;
 
-public class Nsw_addresses implements Serializable{
-    private static final long serialVersionUID = 1L;
-    String address_detail_pid;
-    String address;
-    String locality_name;
-    String mb_2016_code;
+public class Address implements Serializable{
+    private String address_detail_pid;
+    private String address;
+    private String locality_name;
+    private String mb_2016_code;
 
-    public Nsw_addresses(){
+    public Address(){
     }
 
-    public Nsw_addresses(String address_detail_pid, String address, String locality_name, String mb_2016_code) {
+    public Address(String address_detail_pid, String address, String locality_name, String mb_2016_code) {
         this.address_detail_pid = address_detail_pid;
         this.address = address;
         this.locality_name = locality_name;

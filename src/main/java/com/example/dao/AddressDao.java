@@ -5,14 +5,16 @@ package com.example.dao;
  */
 
 import java.util.List;
-import com.example.model.Nsw_addresses;
 
-public interface Nsw_addressesDao {
+import com.example.model.Address;
+
+public interface AddressDao {
     //void insert(Customer cus);
     //void inserBatch(List<Customer> customers);
     //List<Customer> loadAllCustomer();
     //Customer findCustomerById(long cust_id);
     //String findNameById(long cust_id);
     //int getTotalNumberCustomer();
-    List<Nsw_addresses> findNsw_addressByKeyWords(String keyWords);
+    List<Address> findNsw_addressByKeyWords(String keyWords);
+    Address findAddressStringByAddress(String address);
 }

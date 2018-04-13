@@ -6,9 +6,9 @@ package com.example.service;
 
 import java.util.List;
 
-import com.example.model.Nsw_addresses;
+import com.example.model.Address;
 
-public interface Nsw_addressesService {
+public interface AddressesService {
     /*
     void insert(Customer cus);
     void insertBatch(List<Customer> customers);
@@ -17,6 +17,8 @@ public interface Nsw_addressesService {
     void getCustomerNameById(long cust_id);
     void getTotalNumerCustomer();
     */
-    List<Nsw_addresses> findNsw_addressByKeyWords(String keyWords);
-    List<String> findAddressByKeyWords(String keyWords);
+    List<Address> findAddressObjectByKeyWords(String keyWords);
+    List<String> findAddressStringByKeyWords(String keyWords);
+    Address findAddressObjectByAddress(String address);
+
 }
