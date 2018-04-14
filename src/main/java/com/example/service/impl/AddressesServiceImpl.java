@@ -19,11 +19,11 @@ import com.example.dao.AddressDao;
 public class AddressesServiceImpl implements AddressesService {
 
     @Autowired
-    AddressDao nsw_addressesDao;
+    AddressDao addressesDao;
 
     @Override
     public List<Address> findAddressObjectByKeyWords(String keyWords){
-        List<Address> listAdd = nsw_addressesDao.findNsw_addressByKeyWords(keyWords);
+        List<Address> listAdd = addressesDao.findNsw_addressByKeyWords(keyWords);
         return listAdd;
     }
 
@@ -33,7 +33,7 @@ public class AddressesServiceImpl implements AddressesService {
      */
     @Override
     public List<String> findAddressStringByKeyWords(String keyWords){
-        List<Address> listAll = nsw_addressesDao.findNsw_addressByKeyWords(keyWords);
+        List<Address> listAll = addressesDao.findNsw_addressByKeyWords(keyWords);
 
         List<String> listAdd = new ArrayList<String>();
         for(Address row : listAll){
@@ -50,7 +50,7 @@ public class AddressesServiceImpl implements AddressesService {
      */
     @Override
     public Address findAddressObjectByAddress(String address){
-        Address nswAdd = nsw_addressesDao.findAddressStringByAddress(address);
+        Address nswAdd = addressesDao.findAddressStringByAddress(address);
 
         return nswAdd;
     }

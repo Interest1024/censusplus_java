@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.HashMap;
 
 import com.example.model.Suburb;
+import com.example.service.CensusDataService;
 import com.example.service.SuburbService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,13 +20,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class WelcomeController {
+public class MainController {
 
     @Autowired
-    AddressesService nsw_addressesService;
+    AddressesService addressesService;
 
     @Autowired
     SuburbService suburbService;
+
+    @Autowired
+    CensusDataService censusDataService;
 
     // inject via application.properties
     //@Value("${welcome.message:test}")
@@ -38,12 +42,12 @@ public class WelcomeController {
     }
 
     @RequestMapping(value="/", method=RequestMethod.POST)
-    public String result(Map<String, Object> model, @RequestParam("InputAddress") String inputAddress) {
+    public String censusDataResult(Map<String, Object> model, @RequestParam("InputAddress") String inputAddress) {
         //List<Address> listAdd = nsw_addressesService.findNsw_addressByKeyWords("Summer Hill");
 
         //model.put("listAdd",listAdd);
 
-        Address addr = nsw_addressesService.findAddressObjectByAddress(inputAddress);
+        Address addr = addressesService.findAddressObjectByAddress(inputAddress);
 
         //if the system cannot find the address
         if (addr == null){
@@ -65,7 +69,12 @@ public class WelcomeController {
         System.out.println("WelcomeController::result:Info "+inputAddress+","+inputSuburb.getName()+","
                 +inputSuburb.getSsc_code()+","+inputSuburb.getCentreLng()+","+inputSuburb.getCentreLat());
 
-        List<Object> result_data = new ArrayList<Object>();
+
+        //Suburb inputSuburb = suburbService.findSuburbByMb_2016_code(inputMb_2016_code);
+
+        List<Object> result_data = censusDataService.getCensusDataBySuburb(inputSuburb);
+
+        //System.out.println("MainController::censusDataResult:Info "+result_data.size());
 
         model.put("input_suburb",inputSuburb.getName());
         model.put("mb_2016_code",inputMb_2016_code);
@@ -75,44 +84,20 @@ public class WelcomeController {
         model.put("result_data",result_data);
         model.put("mapstats","g3");
 
-        return "mainform";
+        return "result";
     }
 
 
 /*
-            for row in rows:
-    input_ssc = row['ssc_code']
-    suburb_center_lat = row['lat']
-    suburb_center_lng = row['lng']
-
-    print("view.py::index: input_ssc = ",input_ssc,"lat=",suburb_center_lat,"lng=",suburb_center_lng)
-
         # get datailed population data.
     result_data = get_population_data(input_ssc, input_suburb);
-
-        return render_template('result.html',
-                               input_suburb=input_suburb,
-                               mb_2016_code=mb_2016_code,
-                               input_ssc=input_ssc,
-                               suburb_center_lng=suburb_center_lng,
-                               suburb_center_lat=suburb_center_lat,
-                               result_data=result_data,
-                               mapstats="g3") #g3: population
-
-    #elif resultform.validate_on_submit() and resultform.Submit2.data:
-            #return redirect(url_for('main.index'))
-            # render the serach page
-    else:
-            return render_template('mainform.html',
-                                   form=form)
-
 */
 
     @RequestMapping(value="/autocomplete" , method= RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> autocomplete(@RequestParam String q){
-        System.out.println("WelcomController::autocomplete:Info Entrance");
-        List<String> listAdd = nsw_addressesService.findAddressStringByKeyWords(q);
+        //System.out.println("WelcomController::autocomplete:Info Entrance");
+        List<String> listAdd = addressesService.findAddressStringByKeyWords(q);
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("matching_results",listAdd);
         return data;
