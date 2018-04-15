@@ -60,8 +60,10 @@
                 <div class="panel panel-default" th:each="item: ${result_data}">
                     <div th:class="${'panel-heading panel-heading-'+item.get('no')}" role="tab" id="headingThree">
                         <h4 class="panel-title">
-                            <a class="collapsed" onclick=""
-                            role="button" data-toggle="collapse" data-parent="#accordion" th:href="${'#collapse'+item.get('id')}" aria-expanded="false" aria-controls="${'collapse'+item.get('id')}">
+                            <a class="collapsed" th:onclick="'javascript:init(\''+${input_suburb}+'\',\''+${mb_2016_code}+'\',\''+${input_ssc}
+                                    +'\',\''+${suburb_center_lng}+'\',\''+${suburb_center_lat}+'\',\''+${item.get('id')}+'\');'"
+                                    role="button" data-toggle="collapse" data-parent="#accordion"
+                                    th:href="${'#collapse'+item.get('id')}" aria-expanded="false" aria-controls="${'collapse'+item.get('id')}">
                                 <span th:text="${item.get('description')}"></span>
                             </a>
                         </h4>

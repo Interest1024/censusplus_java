@@ -465,9 +465,10 @@ function getData(input_ssc) {
  *create geo shape from retuned json boundaries data using L.geoJson
  ************************************************************/
 function gotData(json) {
-    console.timeEnd("loadmap.js::gotData: got boundaries");
-    console.time("loadmap.js::gotData: parsed GeoJSON");
-    console.log("loadmap.js::gotData: json = "+json);
+    //console.timeEnd("loadmap.js::gotData: got boundaries");
+    //console.time("loadmap.js::gotData: parsed GeoJSON");
+    console.log("loadmap.js::gotData: json = ");
+    console.log(json);
 
     if (json !== null) {
         if(geojsonLayer !== undefined) {
