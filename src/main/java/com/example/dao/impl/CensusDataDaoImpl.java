@@ -3,12 +3,14 @@ package com.example.dao.impl;
 import com.example.dao.CensusDataDao;
 import com.example.model.Suburb;
 
+import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Type;
 import java.util.*;
 
 //import org.json.*;
@@ -32,13 +34,19 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
     }
 
     @Override
-    public List<Object> getCensusDataBySuburb(Suburb inputSuburb){
+    public List<Map<String, Object>> getCensusDataBySuburb(Suburb inputSuburb){
         //System.out.println("CensusDataDaoImpl::getCensusDataBySuburb:Info Entrance");
-        List<Object> result = new ArrayList<Object>(3);
+        List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(3);
         //hardcode 3
-        result.add("g1");
-        result.add("g2");
-        result.add("g3");
+        Map<String, Object> mapOfG1 = new HashMap<String, Object>();
+        mapOfG1.put("g1","");
+        result.add(mapOfG1);
+        Map<String, Object> mapOfG2 = new HashMap<String, Object>();
+        mapOfG1.put("g2","");
+        result.add(mapOfG2);
+        Map<String, Object> mapOfG3 = new HashMap<String, Object>();
+        mapOfG1.put("g3","");
+        result.add(mapOfG3);
 
         String sql = "SELECT sequential_id AS id, "
                 + "lower(table_number) AS table, "
@@ -92,8 +100,8 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
         }
 
         Map<String, Object> row2 = rows2.get(0);
-        for( Object resultObject : result){
-            Map<String, Object> item = (Map<String, Object>)resultObject;
+        for( Map<String, Object> resultObject : result){
+            Map<String, Object> item = resultObject;
 
             if (item.get("id").toString().toLowerCase().equals("g3")){
                 List<List<String>> table1 = new ArrayList<List<String>>();
@@ -156,7 +164,7 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
                 + "WHERE sequential_id IN ("+statsStr+") "
                 + "ORDER BY sequential_id";
 
-        System.out.println("CensusDataDaoImpl::getMetadataByStats:Info "  +sql);
+        //System.out.println("CensusDataDaoImpl::getMetadataByStats:Info sql"  +sql);
         List<Map<String, Object>> rows = getJdbcTemplate().queryForList(sql);
 
         Map<String,Object> response_dict = new HashMap<String, Object>();
@@ -219,7 +227,9 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
                     //PGgeometry geoObj = (PGgeometry)(row.get(col));
                     //feature_dict.put("geometry",geoObj);
                     Gson gson = new Gson();
-                    Map<String,Object> geoObj = gson.fromJson(row.get(col).toString(),Map.class);
+                    Type geoObjMapType = new TypeToken<Map<String, Object>>(){}.getType();
+                    Map<String,Object> geoObj = gson.fromJson(row.get(col).toString(),geoObjMapType);
+                    //Map<String,Object> geoObj = gson.fromJson(row.get(col).toString(),Map.class);
                     feature_dict.put("geometry",geoObj);
                     //feature_dict.put("geometry",row.get(col));
                 }
@@ -240,8 +250,8 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
 
         output_dict.put("features", feature_array);
 
-        System.out.println("CensusDataDaoImpl::get_data:info output_dict: ");
-        System.out.println(output_dict);
+        //System.out.println("CensusDataDaoImpl::get_data:info output_dict: ");
+        //System.out.println(output_dict);
 
         return output_dict;
 

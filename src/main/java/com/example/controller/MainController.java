@@ -71,7 +71,7 @@ public class MainController {
 
         //Suburb inputSuburb = suburbService.findSuburbByMb_2016_code(inputMb_2016_code);
 
-        List<Object> result_data = censusDataService.getCensusDataBySuburb(inputSuburb);
+        List<Map<String, Object>> result_data = censusDataService.getCensusDataBySuburb(inputSuburb);
 
         //System.out.println("MainController::censusDataResult:Info "+result_data.size());
 
@@ -104,8 +104,8 @@ public class MainController {
 
     @RequestMapping(value="/about" , method= RequestMethod.GET)
     public String about(Map<String, Object> model) {
-        ArrayList contributors = new ArrayList();
-        HashMap mMap = new HashMap();
+        ArrayList<HashMap<String, String>> contributors = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> mMap = new HashMap<>();
         mMap.put("name", "Bin Liu");
         mMap.put("link","https://github.com/Interest1024");
         contributors.add(mMap);

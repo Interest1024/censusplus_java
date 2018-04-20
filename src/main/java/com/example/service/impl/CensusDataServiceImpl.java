@@ -19,7 +19,7 @@ public class CensusDataServiceImpl implements CensusDataService {
     CensusDataDao censusDataDao;
 
     @Override
-    public List<Object> getCensusDataBySuburb(Suburb inputSuburb){
+    public List<Map<String, Object>> getCensusDataBySuburb(Suburb inputSuburb){
         return censusDataDao.getCensusDataBySuburb(inputSuburb);
     }
 
