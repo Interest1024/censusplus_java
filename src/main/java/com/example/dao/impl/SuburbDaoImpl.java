@@ -37,6 +37,8 @@ public class SuburbDaoImpl extends JdbcDaoSupport implements SuburbDao {
                 + "where mb_code_2016 = '" + inputMb_2016_code +"' "
                 + "limit 1";
 
+        //System.out.println("SuburbDaoImpl::findSuburbByMb_2016_code:Info sql = "+sql);
+
         List<Map<String, Object>> rows = getJdbcTemplate().queryForList(sql);
 
         if( rows.size() <= 0){
@@ -47,7 +49,11 @@ public class SuburbDaoImpl extends JdbcDaoSupport implements SuburbDao {
         Suburb subu = new Suburb();
         subu.setSsc_code((String)row.get("ssc_code"));
         String nameFromDb = (String)row.get("name");
-        String name = nameFromDb.substring(0, nameFromDb.indexOf("(")).trim();
+        int indexOfParentheses = nameFromDb.indexOf("(");
+        String name = nameFromDb.trim();
+        if (indexOfParentheses > -1){
+            name = nameFromDb.substring(0,indexOfParentheses).trim();
+        }
         subu.setName(name);
         subu.setCentreLat((Double)row.get("lat"));
         subu.setCentreLng((Double)row.get("lng"));
