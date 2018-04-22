@@ -34,12 +34,23 @@ public class MainController {
     //@Value("${welcome.message:test}")
     //private String message = "Hello World";
 
+    /**
+     * The search page
+     * @param model
+     * @return
+     */
     @RequestMapping(value="/", method=RequestMethod.GET)
     public String search(Map<String, Object> model) {
         model.put("message","Enter your address");
         return "mainform";
     }
 
+    /**
+     * response to the summit of a address from the search page.
+     * @param model
+     * @param inputAddress
+     * @return result.html with needed data
+     */
     @RequestMapping(value="/", method=RequestMethod.POST)
     public String censusDataResult(Map<String, Object> model, @RequestParam("InputAddress") String inputAddress) {
         //List<Address> listAdd = nsw_addressesService.findNsw_addressByKeyWords("Summer Hill");
@@ -74,6 +85,7 @@ public class MainController {
         List<Map<String, Object>> result_data = censusDataService.getCensusDataBySuburb(inputSuburb);
 
         //System.out.println("MainController::censusDataResult:Info "+result_data.size());
+        System.out.println("MainController::censusDataResult:Info input_ssc = "+inputSuburb.getSsc_code());
 
         model.put("input_suburb",inputSuburb.getName());
         model.put("mb_2016_code",inputMb_2016_code);
@@ -87,11 +99,10 @@ public class MainController {
     }
 
 
-/*
-        # get datailed population data.
-    result_data = get_population_data(input_ssc, input_suburb);
-*/
-
+    /**
+     * Service for the autocomplete function.
+     * return complete address based on a user's key words
+     */
     @RequestMapping(value="/autocomplete" , method= RequestMethod.GET)
     @ResponseBody
     public Map<String, Object> autocomplete(@RequestParam String q){
@@ -102,6 +113,11 @@ public class MainController {
         return data;
     }
 
+    /**
+     * Return data for the about page
+     * @param model
+     * @return
+     */
     @RequestMapping(value="/about" , method= RequestMethod.GET)
     public String about(Map<String, Object> model) {
         ArrayList<HashMap<String, String>> contributors = new ArrayList<HashMap<String, String>>();
@@ -115,6 +131,7 @@ public class MainController {
     }
 
     /**
+     * Get current boundary level. Now alway return ssc.
      * used by map
      */
     @RequestMapping("/get-bdy-names")
@@ -127,12 +144,14 @@ public class MainController {
             Map<String,String> boundary_dict = new HashMap<String, String>();
             boundary_dict.put("name","ssc");
             boundary_dict.put("min","5");
+            //hardcode: name, min
             boundary_zoom_dict.put( Integer.toString(zoom_level), boundary_dict);
         }
         return boundary_zoom_dict;
     }
 
     /**
+     * Get the definition of census data items.
      * Used by map
      */
     @RequestMapping("/get-metadata")
@@ -147,7 +166,7 @@ public class MainController {
     }
 
     /**
-     * Get census data of every suburb in the scope of the map.
+     * Get the census data item of every suburb in the scope of the map.
      */
     @RequestMapping("/get-data")
     @ResponseBody
@@ -176,7 +195,16 @@ public class MainController {
         return mapInfo;
     }
 
+    /**
+     * Get the census data item of every suburb in the scope of the map.
+     */
+    @RequestMapping("/gettablechart")
+    @ResponseBody
+    public List<List<String>> getCensusDataBySuburbStats(@RequestParam String input_ssc, @RequestParam String stat,
+                                                         @RequestParam String type, @RequestParam int no){
+        return censusDataService.getCensusDataBySuburbStats(input_ssc, stat, type, no);
 
+    }
 
 
     /*

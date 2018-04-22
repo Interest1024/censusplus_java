@@ -34,7 +34,7 @@ public class AddressDaoImpl extends JdbcDaoSupport implements AddressDao {
     public List<Address> findNsw_addressByKeyWords(String keyWords) {
         String sql = "SELECT * from public.nsw_addresses "
                 + "where tsv_address @@ plainto_tsquery('" + keyWords + "') "
-                + "limit 5 ";
+                + "limit 10 ";
         //System.out.println("AddressDao::findNsw_addressByKeyWords:Info sql: "+sql);
         List<Map<String, Object>> rows = getJdbcTemplate().queryForList(sql);
 

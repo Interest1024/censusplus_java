@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Created by E470 on 4/13/2018.
+ * return Suburb related data
  */
 
 @Service

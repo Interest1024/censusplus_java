@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * Created by E470 on 4/14/2018.
+ * return census data
  */
 @Service
 public class CensusDataServiceImpl implements CensusDataService {
@@ -18,9 +19,18 @@ public class CensusDataServiceImpl implements CensusDataService {
     @Autowired
     CensusDataDao censusDataDao;
 
+    /**
+     * get detail census data by suburb for tables and charts data from
+     * @param inputSuburb the input suburb
+     * @return a list of map, including all data which will be shown in panels on the left side of the result.html
+     */
     @Override
     public List<Map<String, Object>> getCensusDataBySuburb(Suburb inputSuburb){
         return censusDataDao.getCensusDataBySuburb(inputSuburb);
+    }
+
+    public List<List<String>> getCensusDataBySuburbStats(String input_ssc, String stat, String type, int no){
+        return censusDataDao.getCensusDataBySuburbStats(input_ssc, stat, type, no);
     }
 
     @Override

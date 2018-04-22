@@ -110,7 +110,7 @@ if (!queryObj.z) {
  */
 
 function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_center_lat,mapstats) {
-    console.log("loadmap.js::init: enter, paras="+searchSuburb+","+mb_2016_code+","+input_ssc+","
+    console.log("loadmap.js::init: enter, paras="+searchSuburb+","+mb_2016_code+","+p_input_ssc+","
         +suburb_center_lng+","+suburb_center_lat+","+mapstats);
 
     input_ssc = p_input_ssc;
@@ -201,8 +201,8 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
     };
     info.update = function (props, colour) {
         var infoStr;
-        console.log("loadmap.js::info.update: props=");
-        console.log(props);
+        //console.log("loadmap.js::info.update: props=");
+        //console.log(props);
         if (props) {
             // improve the formatting of multi-name bdys
             //var re = new RegExp(" - ", "g");
@@ -312,9 +312,9 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
 
         // get the initial stat"s metadata
         currentStat = metadataResponse[0].stats[0];
-        console.log("loadmap.js::init: currentStats=");
-        console.log(currentStat.id);
-        console.log(currentStat);
+        //console.log("loadmap.js::init: currentStats=");
+        //console.log(currentStat.id);
+        //console.log(currentStat);
         //getCurrentStatMetadata(currentStats);
 
         // show legend and info controls
@@ -336,8 +336,8 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
 //put the input subsurb in the center of map when init the map
 function initMapPanTo(curMapCenter){
     if(hasInitMapPanTo == 0){
-        console.log("loadmap.js::initMapPanTo");
-        console.log(curMapCenter);
+        //console.log("loadmap.js::initMapPanTo");
+        //console.log(curMapCenter);
         //map.panTo(curMapCenter);
         map.setView(curMapCenter, currentZoomLevel);
         hasInitMapPanTo=1;
@@ -405,8 +405,8 @@ function stringNumber(val, mapType, type) {
  *call main/views.py::@main.route("/get-data") to get boundaries data
  ***********************************************************/
 function getData(input_ssc) {
-    console.log(currentStat);
-    console.time("got boundaries");
+    //console.log(currentStat);
+    //console.time("got boundaries");
 
     // get new zoom level and boundary
     currentZoomLevel = map.getZoom();
@@ -455,7 +455,7 @@ function getData(input_ssc) {
 
     var requestString = ua.join("");
 
-//    console.log(requestString);
+    //console.log(requestString);
 
     //Fire off AJAX request
     $.getJSON(requestString, gotData);
@@ -467,8 +467,8 @@ function getData(input_ssc) {
 function gotData(json) {
     //console.timeEnd("loadmap.js::gotData: got boundaries");
     //console.time("loadmap.js::gotData: parsed GeoJSON");
-    console.log("loadmap.js::gotData: json = ");
-    console.log(json);
+    //console.log("loadmap.js::gotData: json = ");
+    //console.log(json);
 
     if (json !== null) {
         if(geojsonLayer !== undefined) {
@@ -550,7 +550,7 @@ function gotData(json) {
         alert("No data returned!")
     }
 
-    console.timeEnd("loadmap.js::gotData: parsed GeoJSON");
+    //console.timeEnd("loadmap.js::gotData: parsed GeoJSON");
 
 
 }
