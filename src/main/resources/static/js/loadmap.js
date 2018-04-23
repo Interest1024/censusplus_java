@@ -129,166 +129,90 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
 
     //if (!$.isEmptyObject(map)){
 
-    if(typeof map !== 'undefined'){
-        map.remove();
-    }
+    // if(typeof map !== 'undefined'){
+    //     map.remove();
+    // }
 
-
-    if (elem.getContext && elem.getContext("2d")) {
-        map = new L.Map("datamap", { preferCanvas: true });
+    if(typeof map !== 'undefined') {
+        //if there is polygon already
+        //clear all old polygon of suburbs
+        geojsonLayer.clearLayers();
+        //new polygons will be create after the getJson() below
     }
     else {
-        map = new L.Map("datamap", { preferCanvas: false });
+        if (elem.getContext && elem.getContext("2d")) {
+            map = new L.Map("datamap", {preferCanvas: true});
+        }
+        else {
+            map = new L.Map("datamap", {preferCanvas: false});
+        }
+
+        //disable mouse wheel
+        map.scrollWheelZoom.disable();
+
+        L.tileLayer("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution : "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
+            subdomains : "abcd",
+            minZoom : minZoom,
+            maxZoom : maxZoom,
+            //pane: "mapPane", //"basemap", //"tilePane", //"basemap",
+            opacity: 1
+        }).addTo(map);
+
+        // add control that shows info on mouseover
+        info = L.control();
+        info.onAdd = function () {
+            this._div = L.DomUtil.create("div", "info");
+            L.DomEvent.disableScrollPropagation(this._div);
+            L.DomEvent.disableClickPropagation(this._div);
+            this.update();
+            return this._div;
+        };
+        info.update = function (props, colour) {
+            var infoStr;
+            //console.log("loadmap.js::info.update: props=");
+            //console.log(props);
+            if (props) {
+                // improve the formatting of multi-name bdys
+                //var re = new RegExp(" - ", "g");
+                //var name = props.name.replace(re, "<br/>");
+                var propsname = props.name.replace(/ *\([^)]*\) */g, "");
+
+                //print hightlight suburb's name
+                infoStr = "<span style='font-weight: bold; font-size:1em; background:#fff;'>" + propsname + "</span><br/>";
+
+                var type = currentStat.type;
+                var valStr = stringNumber(props[currentStatId], "values", type);
+                var popStr = stringNumber(props.population, "values", "dummy") + " persons";
+                //console.log("maptype"+currentStat.maptype);
+
+                if (currentStat.maptype === "values") {
+                    var colour = getColor(props[currentStatId], 99999999); //dummy second value get's the right colour
+                    infoStr += "<span class='highlight' style='background:#fff;'>" + type + ": " + valStr + "</span>"; //<br/>" + popStr;
+                }
+                else { // "percent"
+                    var colour = getColor(props.percent, 99999999); //dummy second value get's the right colour
+                    var percentStr = stringNumber(props.percent, "percent", type);
+                    infoStr += "<span class='highlight' style='background:#fff;'>" + currentStat.description + ": " + percentStr + "</span>"; //<br/>" + valStr + " of " + popStr;
+                }
+
+            }
+            else {
+                infoStr ="<span style='font-weight: bold; font-size:1em; background:#fff;'>"+"Pick a boundary"
+                    + "</span>";
+            }
+
+            this._div.innerHTML = infoStr;
+
+        };
+
+        info.addTo(map);
+
     }
-
-    //disable mouse wheel
-    map.scrollWheelZoom.disable();
-
-    //map = new L.Map("datamap", { preferCanvas: false }); // canvas slows Safari down versus Chrome (IE & edge are untested)
-
-
-    // acknowledge the data provider
-    map.attributionControl.addAttribution("Census data &copy; <a href='http://www.abs.gov.au/websitedbs/d3310114.nsf/Home/Attributing+ABS+Material'>ABS</a>");
-
-    // create non-interactive pane (i.e. no mouse events) for basemap tiles
-    map.createPane("basemap");
-    map.getPane("basemap").style.zIndex = 650;
-    map.getPane("basemap").style.pointerEvents = "none";
-
-    // load CartoDB basemap
-    //L.tileLayer("http://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png", {
-    //L.tileLayer("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    L.tileLayer("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution : "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> &copy; <a href='http://cartodb.com/attributions'>CartoDB</a>",
-        subdomains : "abcd",
-        minZoom : minZoom,
-        maxZoom : maxZoom,
-        pane: "tilePane", //"basemap",
-        opacity: 1
-    }).addTo(map);
 
     // set the view to a given center and zoom
     //map.setView(new L.LatLng(-33.85, 151.15), currentZoomLevel);
     map.setView(curMapCenter, currentZoomLevel);
-
-    /*
-     // get bookmarks
-     var bmStorage = {
-     getAllItems : function (callback) {
-     $.getJSON("/main/static/bookmarks.json",
-     function (json) {
-     callback(json);
-     });
-     }
-     };
-     // add bookmark control to map
-     var bm = new L.Control.Bookmarks({
-     position : "topleft",
-     localStorage : false,
-     storage : bmStorage
-     }).addTo(map);
-     */
-
-
-    // add control that shows info on mouseover
-    info = L.control();
-    info.onAdd = function () {
-        this._div = L.DomUtil.create("div", "info");
-        L.DomEvent.disableScrollPropagation(this._div);
-        L.DomEvent.disableClickPropagation(this._div);
-        this.update();
-        return this._div;
-    };
-    info.update = function (props, colour) {
-        var infoStr;
-        //console.log("loadmap.js::info.update: props=");
-        //console.log(props);
-        if (props) {
-            // improve the formatting of multi-name bdys
-            //var re = new RegExp(" - ", "g");
-            //var name = props.name.replace(re, "<br/>");
-            var propsname = props.name.replace(/ *\([^)]*\) */g, "");
-
-            //print hightlight suburb's name
-            infoStr = "<span style='font-weight: bold; font-size:1em; background:#fff;'>" + propsname + "</span><br/>";
-
-            // if no pop, nothing to display
-            //if (props.population === 0) {
-            //    infoStr += "<span class='highlight' style='background:#fff;'>no population</span>";
-            //}
-            //else {
-            // // special case if value is total pop - convert to pop density
-            // var stat = 0;
-            // var type = "";
-            // if (currentStat.description === "Total Persons Persons") {
-            //     stat = props.density;
-            //     type = "Persons / km<sup>2</sup>"
-            // } else {
-            //     stat = props[currentStatId]
-            //     type = currentStat.type;
-            // }
-
-            var type = currentStat.type;
-            var valStr = stringNumber(props[currentStatId], "values", type);
-            var popStr = stringNumber(props.population, "values", "dummy") + " persons";
-            //console.log("maptype"+currentStat.maptype);
-
-            if (currentStat.maptype === "values") {
-                var colour = getColor(props[currentStatId], 99999999); //dummy second value get's the right colour
-                infoStr += "<span class='highlight' style='background:#fff;'>" + type + ": " + valStr + "</span>"; //<br/>" + popStr;
-            }
-            else { // "percent"
-                var colour = getColor(props.percent, 99999999); //dummy second value get's the right colour
-                var percentStr = stringNumber(props.percent, "percent", type);
-                infoStr += "<span class='highlight' style='background:#fff;'>" + currentStat.description + ": " + percentStr + "</span>"; //<br/>" + valStr + " of " + popStr;
-            }
-
-            // highlight low population bdys
-            //if (props.population <= currentBoundaryMin) {
-            //    infoStr += "<br/><span class='highlight' style='background:" + lowPopColour + "'>low population</span>";
-            //}
-            //}
-        }
-        else {
-            infoStr ="<span style='font-weight: bold; font-size:1em; background:#fff;'>"+"Pick a boundary"
-                + "</span>";
-        }
-
-        this._div.innerHTML = infoStr;
-    };
-
-
-    /*
-     // add radio buttons to choose stat to theme the map
-     themer = L.control({
-     position : "bottomright"
-     });
-
-     themer.onAdd = function () {
-     this._div = L.DomUtil.create("div", "info themer");
-     L.DomEvent.disableScrollPropagation(this._div);
-     L.DomEvent.disableClickPropagation(this._div);
-     this.update();
-     return this._div;
-     };
-
-     themer.update = function (radioButtons) {
-     this._div.innerHTML = radioButtons;
-
-     // event to trigger the map theme change
-     $("input:radio[name=stat]").click(function () {
-     currentStatId = $(this).val();
-
-     // update stat metadata and map data
-     getCurrentStatMetadata();
-     getData(input_ssc);
-     });
-     };
-     themer.addTo(map);
-     themer.update("<b>L O A D I N G . . .</b>");
-     */
-
-
 
     // get list of boundaries and the zoom levels they display at
     // and get stats metadata, including map theme classes
@@ -312,14 +236,6 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
 
         // get the initial stat"s metadata
         currentStat = metadataResponse[0].stats[0];
-        //console.log("loadmap.js::init: currentStats=");
-        //console.log(currentStat.id);
-        //console.log(currentStat);
-        //getCurrentStatMetadata(currentStats);
-
-        // show legend and info controls
-        // legend.addTo(map);
-        info.addTo(map);
 
         // get the first lot of data
         getData(input_ssc);
@@ -345,34 +261,7 @@ function initMapPanTo(curMapCenter){
     else{
     }
 }
-/*
- function setRadioButtons() {
- // var radioButtons = "<h4>Active stat</h4>";
- var radioButtons = "";
 
- for (var i = 0; i < currentStats.length; i++){
- var value = currentStats[i].id;
- var description = currentStats[i].description;
- var type = currentStats[i].type;
-
- if (value === currentStatId) {
- //format values
- var mapType = currentStats[i].maptype;
- var minStr = stringNumber(currMapMin, mapType, type);
- var maxStr = stringNumber(currMapMax, mapType, type);
-
- radioButtons += "<div><input id='r" + i.toString() + "' type='radio' name='stat' value='" + value +
- "' checked='checked'><label for='r" + i.toString() + "'><span><span></span></span><b>" + description + "</b></label>" +
- "<div style='padding: 0.2em 0em 0.6em 1.8em'><table class='colours' ><tr><td>" + minStr + "</td><td style='width: 10em'></td><td>" + maxStr + "</td></tr></table></div></div>";
- } else {
- radioButtons += "<div><input id='r" + i.toString() + "' type='radio' name='stat' value='" + value +
- "'><label for='r" + i.toString() + "'><span><span></span></span>" + description + "</label></div>";
- }
- }
-
- themer.update(radioButtons);
- }
- */
 function getCurrentStatMetadata(currentStats) {
     // loop through the stats to get the current one
     for (var i = 0; i < currentStats.length; i++) {
@@ -500,59 +389,22 @@ function gotData(json) {
             //}
         }
 
-        // correct max percents over 100% (where pop is less than stat, for whatever reason)
-        //if (currentStat.maptype === "percent" && currMapMax > 100.0) { currMapMax = 100.0 }
-
-        // set the number range for the colour gradient (allow for decimals, convert to ints)
-        //var minInt = parseInt(currMapMin.toFixed(1).toString().replace(".",""));
-        //var maxInt = parseInt(currMapMax.toFixed(1).toString().replace(".",""));
-
-        //colourRamp.setNumberRange(minInt, maxInt);
-
-
-        //update the legend with the new min and max
-        // legend.update();
-
-        // reset info box
+        // reset info box to empty
         info.update();
-
-        // create the radio buttons
-        //setRadioButtons();
-
-        // console.log(currMapMin);
-        // console.log(currMapMax);
 
         // add data to map layer
         geojsonLayer = L.geoJson(json, {
             style : style,
-            onEachFeature : onEachFeature
+            onEachFeature : onEachFeature //,
+            //pane: "overlayPane" //"geojsonpane"
         }).addTo(map);
 
-        //calculate the center of the suburb
-
-        //json.forEach(function(curElement){
-        //console.log("loadmap.js::gotData: json:"+json);
-        //});
-
-        /*
-         //center current suburb
-         //console.log("loadmap.js::gotData: curCenter = ");
-         var curPolygon = L.polygon(json.features[0].geometry.coordinates);
-         var mapCenter = curPolygon.getBounds().getCenter();
-         //console.log(mapCenter.lat);
-         curMapCenter = new L.LatLng(mapCenter.lng,mapCenter.lat);
-         //console.log(curMapCenter);
-         //put the input subsurb in the center of map
-         initMapPanTo(curMapCenter);
-         */
     }
     else {
         alert("No data returned!")
     }
 
     //console.timeEnd("loadmap.js::gotData: parsed GeoJSON");
-
-
 }
 
 //Set the style of suburbs.
@@ -662,12 +514,6 @@ function highlightFeature(e) {
         }
         currLayer.setStyle(hightlightstyle);
 
-        //    if (!L.Browser.ie && !L.Browser.edge && !L.Browser.opera) {
-        //currLayer.bringToFront();
-        //    }
-        //console.log("loadmap.js::highlightFeature:");
-        //console.log(currentStatId);
-        //console.log(currLayer.feature.properties[currentStatId]);
         info.update(currLayer.feature.properties);
     }
 }
@@ -677,12 +523,7 @@ function resetHighlight(e) {
     info.update();
 }
 
-// function zoomToFeature(e) {
-//    map.fitBounds(e.target.getBounds());
-// }
-
-
-//the value is in [0,1]
+//get a colour for a value in [0,1]
 function heatMapColorforValue(value){
     var h = (1.0 - value) * 240
     return hslToHex(h,100,50)
