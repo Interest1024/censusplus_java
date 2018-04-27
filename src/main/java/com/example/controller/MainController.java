@@ -3,18 +3,16 @@ package com.example.controller;
 import java.util.*;
 
 import com.example.model.Suburb;
+import com.example.service.BIAnalysisService;
 import com.example.service.CensusDataService;
 import com.example.service.SuburbService;
+import com.google.gson.Gson;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.service.AddressesService;
 import com.example.model.Address;
-
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 //import org.json.JSONObject;
 
@@ -29,6 +27,9 @@ public class MainController {
 
     @Autowired
     CensusDataService censusDataService;
+
+    @Autowired
+    BIAnalysisService bIAnalysisService;
 
     // inject via application.properties
     //@Value("${welcome.message:test}")
@@ -204,6 +205,47 @@ public class MainController {
                                                          @RequestParam String type, @RequestParam int no){
         return censusDataService.getCensusDataBySuburbStats(input_ssc, stat, type, no);
 
+    }
+
+
+    @RequestMapping(path = "/bianalysis")
+    public String bianalysis(Map<String, Object> model) {
+        model.put("message","bianalysis");
+        return "bianalysis";
+    }
+
+    /**
+     * get all .csv file in the data directory
+     * @return
+     */
+    @RequestMapping(path = "/csvdata", method = RequestMethod.GET)
+    @ResponseBody
+    public  String getBIAnalysisCsvData() {
+        List<String> resultList = bIAnalysisService.getCsvFiles();
+        Gson gson = new Gson();
+        String result = gson.toJson(resultList);
+        return result;
+    }
+
+    /**
+     * get the data in a csv files for the page BIAnalysis
+     * @param fileName
+     * @return
+     */
+    @RequestMapping(path = "/data/{fileName}")
+    @ResponseBody
+    public  Map<String, String> getBIAnalysisCsvData(@PathVariable("fileName") String fileName) {
+        String fileStr = bIAnalysisService.readCsvfile(fileName);
+        //System.out.println("MainController::getBIAnalysisCsvData: Info");
+        //System.out.println(fileName);
+        //System.out.println(fileStr);
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("name",fileName);
+        resultMap.put("csv",fileStr);
+        //Gson gson = new Gson();
+        //String result = gson.toJson(resultMap);
+        //return result;
+        return resultMap;
     }
 
 

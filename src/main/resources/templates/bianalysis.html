@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>BI Analysis</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" type="text/css" href="./bianalysis/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./bianalysis/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./bianalysis/bower_components/bootstrap-fileinput/css/fileinput.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./bianalysis/bower_components/select2/dist/css/select2.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./bianalysis/bower_components/datatables/media/css/jquery.dataTables.min.css"/>
+
+    <link rel="stylesheet" type="text/css" href="./bianalysis/resources/viz.css"/>
+    <link rel="stylesheet" type="text/css" href="./bianalysis/resources/opend.css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style type="text/css">
+      body {
+          padding-top: 60px;
+          padding-bottom: 40px;
+          float: center;
+        }
+    </style>
+  </head>
+  <body>
+
+  <header>
+    <nav class="navbar navbar-default navbar-fixed-top mainsearchnavbar">
+      <div id="container_menu">
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand" style="width: auto;">
+            <img src="/static/censusplus.png" th:src="@{/censusplus.png}" class="brand-icon" />
+          </a>
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-links"
+                  aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+
+        <div id="navbar-links" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav pull-right">
+            <li><a href="/">Home</a></li>
+            <li><a href="/bianalysis">BI Analysis</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!--div id="navigation_bar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#" id="home_link">OPEND</a>
+      </div>
+      <div id="menubar" class="collapse navbar-collapse">
+      </div>
+    </div>
+  </div-->
+
+    <div id="container" class="container">
+    </div>
+
+  <footer id="footer">
+    <p class="pad-lft-2 pad-rgt">
+      CensusPlus Project - A volunteer project of <a href="https://www.code.sydney" target="_blank">Code.Sydney</a><br />
+      This work is licensed under a <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution License</a>
+    </p>
+  </footer>
+
+
+    <script type='text/javascript'></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/bootstrap-fileinput/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/select2/dist/js/select2.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/papaparse/papaparse.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/echarts/build/dist/echarts-all.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/d3/d3.min.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/react/react.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/react/react-dom.js"></script>
+    <script type="text/javascript" src="./bianalysis/bower_components/requirejs/require.js"></script>
+    <script>
+      requirejs.config({
+          baseUrl: './bianalysis/lib',
+          paths: {
+              comp: './components',
+              viz: './visualization',
+              event: './event',
+              data: './data'
+          }
+      });
+
+    </script>
+    <script type="text/javascript" src="./bianalysis/lib/app.js"></script>
+    <!--script type="text/javascript" src="./main-built.js"></script-->
+  </body>
+</html>
