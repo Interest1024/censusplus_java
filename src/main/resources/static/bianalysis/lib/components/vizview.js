@@ -40,6 +40,8 @@ define(["comp/common/collapse", "comp/common/panel", "comp/dataselection", "comp
 
             var data = Papa.parse(csv);
             vizData = data.data;
+            console.log("vizview::line 47");
+            console.log(vizData);
         });
     };
 

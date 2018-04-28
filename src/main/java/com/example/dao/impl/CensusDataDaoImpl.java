@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.Type;
+import javax.sql.DataSource;
 import java.util.*;
 
 //import org.json.*;
@@ -25,13 +26,15 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
 
     @Autowired
     @Qualifier("dataSource")
-    javax.sql.DataSource dataSource;
+    DataSource dataSource;
+
 
 
     @PostConstruct
     private void initialize(){
         setDataSource(dataSource);
     }
+
 
     /**
      * get all detail census data by suburb

@@ -44,6 +44,8 @@ define(["comp/common/collapse",
 
             var data = Papa.parse(csv);
             vizData = data.data;
+            console.log("vizview::line 47");
+            console.log(vizData);
         });
     };
 
