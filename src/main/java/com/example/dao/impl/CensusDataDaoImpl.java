@@ -49,22 +49,16 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
         the format of the list is as follows:
         [
             {
-            no=1,
-            numoftable=1,
-            maptype=values,
-            description=Total Persons Persons,
-            numofchart=1,
-            id=g3,
-            type=Persons,
-            chart=chart_g3_01.png,
-            table=[
-                    [suburb, year, value],
-                    [Summer Hill, 2016, 7311.0]
-                    ]
+                no=1,
+                maptype=values,
+                description=Total Persons Persons,
+                id=g3,
+                type=Persons,
+                table=g01
              },
              {
-             no=2,
-              ...
+                 no=2,
+                  ...
              }
           ]
 
@@ -101,7 +95,7 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
             Map<String, Object> featureDict = new HashMap<String,Object>(row);
 
             featureDict.put("id", featureDict.get("id").toString().toLowerCase());
-            featureDict.put("table", featureDict.get("table").toString().toLowerCase());
+            //featureDict.put("table", featureDict.get("table").toString().toLowerCase());
             if (featureDict.get("id").toString().toLowerCase().equals("g1")){
                 featureDict.put("no","2");
                 result.set(1,featureDict);
@@ -117,71 +111,28 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
             }
         }
 
-        sql = "SELECT tab.g1, tab.g2, tab.g3, tab.g4, tab.g5, tab.g6, tab.g7, tab.g8, tab.g9, "
-                + "tab.g10, tab.g11, tab.g12, tab.g13, tab.g14, tab.g15, tab.g16, tab.g17, tab.g18, tab.g19, "
-                + "tab.g20, tab.g21, tab.g22, tab.g23, tab.g24, tab.g25, tab.g26, tab.g27, tab.g28, tab.g29, "
-                + "tab.g30, tab.g31, tab.g32, tab.g33, tab.g34, tab.g35, tab.g36 "
-                + "FROM census_2016_data.ssc_g01 AS tab "
-                + "WHERE tab.region_id = '"+inputSuburb.getSsc_code()+"'"
-                + "LIMIT 1";
-
-        List<Map<String, Object>> rows2 = getJdbcTemplate().queryForList(sql);
-
-        if( rows2.size() <= 0){
-            return null;
-        }
-
-        Map<String, Object> row2 = rows2.get(0);
-        for( Map<String, Object> resultObject : result){
-            Map<String, Object> item = resultObject;
-
-            if (item.get("id").toString().toLowerCase().equals("g3")){
-                List<List<String>> table1 = new ArrayList<List<String>>();
-                table1.add(Arrays.asList("suburb", "year", "value"));
-                table1.add(Arrays.asList(inputSuburb.getName(), "2016", row2.get("g3").toString()));
-                //g3 has no 1, and is in result[0]
-                Map<String,Object> resultItem = (Map<String,Object>)(result.get(0));
-                resultItem.put("numoftable",Integer.parseInt("1"));
-                resultItem.put("table",table1);
-                resultItem.put("numofchart",Integer.parseInt("1"));
-                resultItem.put("chart","");
-            }
-            else if(item.get("id").toString().toLowerCase().equals("g2")) {
-                List<List<String>> table1 = new ArrayList<List<String>>();
-                table1.add(Arrays.asList("suburb", "year", "value"));
-                table1.add(Arrays.asList(inputSuburb.getName(), "2016", row2.get("g2").toString()));
-                //g3 has no 1, and is in result[2]
-                Map<String,Object> resultItem = (Map<String,Object>)(result.get(2));
-                resultItem.put("numoftable",Integer.parseInt("1"));
-                resultItem.put("table",table1);
-                resultItem.put("numofchart",Integer.parseInt("1"));
-                resultItem.put("chart","");
-            }
-            else if(item.get("id").toString().toLowerCase().equals("g1")) {
-                List<List<String>> table1 = new ArrayList<List<String>>();
-                table1.add(Arrays.asList("suburb", "year", "value"));
-                table1.add(Arrays.asList(inputSuburb.getName(), "2016", row2.get("g1").toString()));
-                //g3 has no 1, and is in result[1]
-                Map<String,Object> resultItem = (Map<String,Object>)(result.get(1));
-                resultItem.put("numoftable",Integer.parseInt("1")); //now only support one table
-                resultItem.put("table",table1);
-                resultItem.put("numofchart",Integer.parseInt("1"));
-                resultItem.put("chart","");
-            }
-        }
-
-        System.out.println(result);
+        //System.out.println("CensusDataDaoImpl::getCensusDataBySuburb:Info result = "+result);
         return result;
     }
 
     /**
      * get detail census data by suburb for tables and charts data in one panel
-     * @param
+     * @param input_ssc: suburb's ssc code
+     * @param name: suburb's name
      * @return
      */
-    public List<List<String>> getCensusDataBySuburbStats(String input_ssc, String stat, String type, int no) {
+    public List<List<String>> getCensusDataBySuburbStats(String input_ssc, String name, String stat, String type, int no) {
         //System.out.println("CensusDataDaoImpl::getCensusDataBySuburb:Info Entrance");
-        if (stat.equals("g3") && type.equals("chart") && no == 1) {
+        if (stat.equals("g3") && type.equals("table") && no == 1) {
+            return getTableData_g3_01(input_ssc, name);
+        }
+        if (stat.equals("g2") && type.equals("table") && no == 1) {
+            return getTableData_g2_01(input_ssc, name);
+        }
+        if (stat.equals("g1") && type.equals("table") && no == 1) {
+            return getTableData_g1_01(input_ssc, name);
+        }
+        else if (stat.equals("g3") && type.equals("chart") && no == 1) {
             return getChartData_g3_01(input_ssc);
         }
         else if(stat.equals("g2") && type.equals("chart") && no == 1) {
@@ -194,6 +145,93 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
             return null;
         }
     }
+
+    /**
+     * get the data for the first table in panel of g3
+     * @param input_ssc
+     * @return
+     */
+    private List<List<String>> getTableData_g3_01(String input_ssc, String name){
+        String sql = "SELECT tab.g1, tab.g2, tab.g3, tab.g4, tab.g5, tab.g6, tab.g7, tab.g8, tab.g9, "
+                + "tab.g10, tab.g11, tab.g12, tab.g13, tab.g14, tab.g15, tab.g16, tab.g17, tab.g18, tab.g19, "
+                + "tab.g20, tab.g21, tab.g22, tab.g23, tab.g24, tab.g25, tab.g26, tab.g27, tab.g28, tab.g29, "
+                + "tab.g30, tab.g31, tab.g32, tab.g33, tab.g34, tab.g35, tab.g36 "
+                + "FROM census_2016_data.ssc_g01 AS tab "
+                + "WHERE tab.region_id = '"+input_ssc+"'"
+                + "LIMIT 1";
+
+        List<Map<String, Object>> rows2 = getJdbcTemplate().queryForList(sql);
+
+        if( rows2.size() <= 0){
+            return null;
+        }
+
+        Map<String, Object> row2 = rows2.get(0);
+        List<List<String>> table1 = new ArrayList<List<String>>();
+        table1.add(Arrays.asList("suburb", "year", "value"));
+        Integer value = ((Double)(row2.get("g3"))).intValue();
+        table1.add(Arrays.asList(name, "2016", value.toString()));
+
+        return table1;
+    }
+
+    /**
+     * get the data for the first table in panel of g2
+     * @param input_ssc
+     * @return
+     */
+    private List<List<String>> getTableData_g2_01(String input_ssc, String name){
+        String sql = "SELECT tab.g1, tab.g2, tab.g3, tab.g4, tab.g5, tab.g6, tab.g7, tab.g8, tab.g9, "
+                + "tab.g10, tab.g11, tab.g12, tab.g13, tab.g14, tab.g15, tab.g16, tab.g17, tab.g18, tab.g19, "
+                + "tab.g20, tab.g21, tab.g22, tab.g23, tab.g24, tab.g25, tab.g26, tab.g27, tab.g28, tab.g29, "
+                + "tab.g30, tab.g31, tab.g32, tab.g33, tab.g34, tab.g35, tab.g36 "
+                + "FROM census_2016_data.ssc_g01 AS tab "
+                + "WHERE tab.region_id = '"+input_ssc+"'"
+                + "LIMIT 1";
+
+        List<Map<String, Object>> rows2 = getJdbcTemplate().queryForList(sql);
+
+        if( rows2.size() <= 0){
+            return null;
+        }
+
+        Map<String, Object> row2 = rows2.get(0);
+        List<List<String>> table1 = new ArrayList<List<String>>();
+        table1.add(Arrays.asList("suburb", "year", "value"));
+        Integer value = ((Double)(row2.get("g2"))).intValue();
+        table1.add(Arrays.asList(name, "2016", value.toString()));
+
+        return table1;
+    }
+    /**
+     * get the data for the first table in panel of g1
+     * @param input_ssc
+     * @return
+     */
+    private List<List<String>> getTableData_g1_01(String input_ssc, String name){
+        String sql = "SELECT tab.g1, tab.g2, tab.g3, tab.g4, tab.g5, tab.g6, tab.g7, tab.g8, tab.g9, "
+                + "tab.g10, tab.g11, tab.g12, tab.g13, tab.g14, tab.g15, tab.g16, tab.g17, tab.g18, tab.g19, "
+                + "tab.g20, tab.g21, tab.g22, tab.g23, tab.g24, tab.g25, tab.g26, tab.g27, tab.g28, tab.g29, "
+                + "tab.g30, tab.g31, tab.g32, tab.g33, tab.g34, tab.g35, tab.g36 "
+                + "FROM census_2016_data.ssc_g01 AS tab "
+                + "WHERE tab.region_id = '"+input_ssc+"'"
+                + "LIMIT 1";
+
+        List<Map<String, Object>> rows2 = getJdbcTemplate().queryForList(sql);
+
+        if( rows2.size() <= 0){
+            return null;
+        }
+
+        Map<String, Object> row2 = rows2.get(0);
+        List<List<String>> table1 = new ArrayList<List<String>>();
+        table1.add(Arrays.asList("suburb", "year", "value"));
+        Integer value = ((Double)(row2.get("g1"))).intValue();
+        table1.add(Arrays.asList(name, "2016", value.toString()));
+
+        return table1;
+    }
+
 
     private List<List<String>> getChartData_g3_01(String input_ssc){
 
@@ -337,8 +375,6 @@ public class CensusDataDaoImpl extends JdbcDaoSupport implements CensusDataDao {
         List<Map<String, Object>> rows = getJdbcTemplate().queryForList(sql);
 
         Map<String,Object> response_dict = new HashMap<String, Object>();
-
-
 
         response_dict.put("type","StatsCollection");
         response_dict.put("classes",numClasses);

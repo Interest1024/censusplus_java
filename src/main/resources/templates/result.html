@@ -73,19 +73,11 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <table class="table table-striped">
-                                        <tbody>
-                                        <tr th:each="line: ${item.get('table')}">
-                                            <td th:each="col: ${line}">
-                                                <span th:text="${col}"></span>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-
-                                    <!--div th:each="chart: ${item.get('chart')}">
-                                        <img th:src="${chart}" width="100%" />
-                                    </div-->
+                                    <!-- Google table -->
+                                    <div>
+                                        <div th:id="${'table_'+item.get('id')+'_01'}"></div>
+                                    </div>
+                                    <!-- Google Chart -->
                                     <div>
                                         <div th:id="${'chart_'+item.get('id')+'_01'}"></div>
                                     </div>

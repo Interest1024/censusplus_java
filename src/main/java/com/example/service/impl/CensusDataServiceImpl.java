@@ -29,8 +29,8 @@ public class CensusDataServiceImpl implements CensusDataService {
         return censusDataDao.getCensusDataBySuburb(inputSuburb);
     }
 
-    public List<List<String>> getCensusDataBySuburbStats(String input_ssc, String stat, String type, int no){
-        return censusDataDao.getCensusDataBySuburbStats(input_ssc, stat, type, no);
+    public List<List<String>> getCensusDataBySuburbStats(String input_ssc, String name, String stat, String type, int no){
+        return censusDataDao.getCensusDataBySuburbStats(input_ssc, name, stat, type, no);
     }
 
     @Override

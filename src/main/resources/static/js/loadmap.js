@@ -18,7 +18,7 @@ var currLayer;
 var numClasses = 7; // number of classes (i.e colours) in map theme
 var minZoom = 4;
 var maxZoom = 16;
-var currentZoomLevel = 0;
+var initZoomLevel = 13;
 var censusYear = "";
 var curMapCenter = new L.LatLng(-33.85, 151.15);
 //{lat: 151.12754999999999, lng: -33.88945}
@@ -26,6 +26,9 @@ var hasInitMapPanTo = 0;
 
 // current searched ssc code
 var input_ssc;
+//the suburb name from seach box
+var inputSuburb="";
+
 var statsArray = [];
 var currentStat;
 //for example: {'id': 'g2', 'table': 'g01', 'description': 'Total Persons Females', 'type': 'Females', 'maptype': 'values'}]
@@ -47,9 +50,6 @@ var colourRamp;
 //var colourRange = ["#1a1a1a", "#DD4132"]; // dark grey > red
 //var colourRange = ["#1a1a1a", "#92B558"]; // dark grey > green
 var colourRange = ["#ffffff", "#00ff00"]; // dark grey > green
-
-//the suburb name from seach box
-var inputSuburb="";
 
 // get querystring values
 // code from http://forum.jquery.com/topic/getting-value-from-a-querystring
@@ -81,41 +81,12 @@ if (queryObj.b !== undefined) {
     boundaryOverride = queryObj.b.toLowerCase();
 }
 
-// start zoom level
-if (!queryObj.z) {
-    currentZoomLevel = 13;
-} else {
-    currentZoomLevel = queryObj.z;
-}
-
-//// number of classes to theme the map - TODO: ADD SUPPORT FOR CUSTOM NUMBER OF MAP CLASSES
-//if (!queryObj["n"]) {
-//    numClasses = 7;
-//} else {
-//    numClasses = queryObj["n"];
-//}
-
-/*
- // get the stat(s) - can include basic equations using + - * / and ()  e.g. B23 * (B45 + B678)
- if (!queryObj.stats) {
- if (censusYear === "2016") {
- statsArray = ["g3", "g1", "g2"]; // total_persons
- } else {  // 2011
- statsArray = ["b3", "b1", "b2"]; // total_persons
- }
- } else {
- statsArray = encodeURIComponent(queryObj.stats.toLowerCase()).split("%2C");
- // TODO: handle maths operators as well as plain stats
- }
- */
-
 function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_center_lat,mapstats) {
     console.log("loadmap.js::init: enter, paras="+searchSuburb+","+mb_2016_code+","+p_input_ssc+","
         +suburb_center_lng+","+suburb_center_lat+","+mapstats);
 
+    //set global variables using parameters
     input_ssc = p_input_ssc;
-    // initial stat is the first one in the querystring
-    //currentStatId = statsArray[0];
     currentStatId = mapstats.toLowerCase();
     inputSuburb = searchSuburb;
     curMapCenter = new L.LatLng(suburb_center_lat, suburb_center_lng);
@@ -127,18 +98,14 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
     //Initialize the map on the "map" div - only use canvas if supported (can be slow on Safari)
     var elem = document.createElement("canvas");
 
-    //if (!$.isEmptyObject(map)){
-
-    // if(typeof map !== 'undefined'){
-    //     map.remove();
-    // }
-
+    //if this is not the first time to show the map
     if(typeof map !== 'undefined') {
         //if there is polygon already
         //clear all old polygon of suburbs
         geojsonLayer.clearLayers();
         //new polygons will be create after the getJson() below
     }
+    //if this is the first time to show the map
     else {
         if (elem.getContext && elem.getContext("2d")) {
             map = new L.Map("datamap", {preferCanvas: true});
@@ -150,6 +117,7 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
         //disable mouse wheel
         map.scrollWheelZoom.disable();
 
+        //add map layer
         L.tileLayer("https://a.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution : "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>",
             subdomains : "abcd",
@@ -182,8 +150,10 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
                 infoStr = "<span style='font-weight: bold; font-size:1em; background:#fff;'>" + propsname + "</span><br/>";
 
                 var type = currentStat.type;
+                //console.log("loadmap.js::init");
+                //console.log(props);
                 var valStr = stringNumber(props[currentStatId], "values", type);
-                var popStr = stringNumber(props.population, "values", "dummy") + " persons";
+                //var popStr = stringNumber(props.population, "values", "dummy") + " persons";
                 //console.log("maptype"+currentStat.maptype);
 
                 if (currentStat.maptype === "values") {
@@ -208,11 +178,19 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
 
         info.addTo(map);
 
-    }
+        // set the view to a given center and zoom
+        //map.setView(new L.LatLng(-33.85, 151.15), currentZoomLevel);
+        map.setView(curMapCenter, initZoomLevel);
+        //This should be before the setting of the moveend event.
 
-    // set the view to a given center and zoom
-    //map.setView(new L.LatLng(-33.85, 151.15), currentZoomLevel);
-    map.setView(curMapCenter, currentZoomLevel);
+        //set the response for event moveend
+        // get a new set of data when map panned or zoomed
+        map.on("moveend", function () {
+            //getCurrentStatMetadata(currentStats);
+            getData(input_ssc);
+        });
+
+    }
 
     // get list of boundaries and the zoom levels they display at
     // and get stats metadata, including map theme classes
@@ -234,42 +212,15 @@ function init(searchSuburb,mb_2016_code,p_input_ssc,suburb_center_lng,suburb_cen
             }
         }
 
-        // get the initial stat"s metadata
+        // get current initial stat's metadata, including id, type, and so on
         currentStat = metadataResponse[0].stats[0];
 
-        // get the first lot of data
+        // get the data for the shapes in suburb layer and attach census data into these shapes
         getData(input_ssc);
+
     });
-
-    // get a new set of data when map panned or zoomed
-    map.on("moveend", function () {
-        //getCurrentStatMetadata(currentStats);
-        getData(input_ssc);
-    });
-
 }
 
-//put the input subsurb in the center of map when init the map
-function initMapPanTo(curMapCenter){
-    if(hasInitMapPanTo == 0){
-        //console.log("loadmap.js::initMapPanTo");
-        //console.log(curMapCenter);
-        //map.panTo(curMapCenter);
-        map.setView(curMapCenter, currentZoomLevel);
-        hasInitMapPanTo=1;
-    }
-    else{
-    }
-}
-
-function getCurrentStatMetadata(currentStats) {
-    // loop through the stats to get the current one
-    for (var i = 0; i < currentStats.length; i++) {
-        if (currentStats[i].id === currentStatId) {
-            currentStat = currentStats[i];
-        }
-    }
-}
 
 function stringNumber(val, mapType, type) {
     var numString = "";
@@ -289,16 +240,17 @@ function stringNumber(val, mapType, type) {
     return numString;
 }
 
-/***********************************************************
+/**
  *called when init or moving map
  *call main/views.py::@main.route("/get-data") to get boundaries data
- ***********************************************************/
+ */
 function getData(input_ssc) {
     //console.log(currentStat);
     //console.time("got boundaries");
 
     // get new zoom level and boundary
-    currentZoomLevel = map.getZoom();
+    var currentZoomLevel = map.getZoom();
+
     currentBoundary = boundaryZooms[currentZoomLevel.toString()].name;
     currentBoundaryMin = boundaryZooms[currentZoomLevel.toString()].min;
 

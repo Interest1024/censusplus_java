@@ -197,17 +197,24 @@ public class MainController {
     }
 
     /**
-     * Get the census data item of every suburb in the scope of the map.
+     * Get the data for tables and charts in panels.
      */
     @RequestMapping("/gettablechart")
     @ResponseBody
-    public List<List<String>> getCensusDataBySuburbStats(@RequestParam String input_ssc, @RequestParam String stat,
+    public List<List<String>> getCensusDataBySuburbStats(@RequestParam String input_ssc, @RequestParam String name,
+                                                         @RequestParam String stat,
                                                          @RequestParam String type, @RequestParam int no){
-        return censusDataService.getCensusDataBySuburbStats(input_ssc, stat, type, no);
-
+        List<List<String>> result = censusDataService.getCensusDataBySuburbStats(input_ssc, name, stat, type, no);
+        //System.out.println("MainController::getCensusDataBySuburbStats:Info result = "+result+","+input_ssc+","+stat);
+        return result;
     }
 
 
+    /**
+     * return the bianalysis page, when click BI Analysis menu item.
+     * @param model
+     * @return
+     */
     @RequestMapping(path = "/bianalysis")
     public String bianalysis(Map<String, Object> model) {
         model.put("message","bianalysis");
